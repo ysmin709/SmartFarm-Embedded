@@ -69,12 +69,6 @@ def main():
     
     real_raw_input = vars(__builtins__).get('raw_input', input)
     
-    ph = 0
-    ec = 0
-    rtd = 0
-    check_ph = False
-    check_ec = False
-    check_rtd = False
     data = Data()
     
     while True:
@@ -120,11 +114,11 @@ def main():
                         data.update(error=True)
                         data.error_post()
                     else:
-                        ph = float(data_list[0])
-                        ec = round(float(data_list[1]) / 100, 2)
-                        rtd = round(float(data_list[2]), 1)
+                        data.ph = float(data_list[0])
+                        data.ec = round(float(data_list[1]) / 100, 2)
+                        data.rtd = round(float(data_list[2]), 1)
                         
-                        data.checkRecipe(ph, ec, rtd)
+                        data.checkRecipe(data.ph, data.ec, data.rtd)
                         
                 
             except KeyboardInterrupt:       # catches the ctrl-c command, which breaks the loop above

@@ -24,7 +24,7 @@ class Data:
         self.local_time = None
         self.pH = 0.0
         self.ec = 0.0
-        self.liquid_temperature = 0.0
+        self.rtd = 0.0
         self.errors = []
         self.uuid = os.system(EXPORT204)
         
@@ -59,7 +59,7 @@ class Data:
     
     def post(self):
         self.uuid = self.getSerial()
-        doc_ref = db.collection(u'test').document(u'{}'.format(self.uuid)).collection(u'Sensor Data').document(u'{}'.format(self.local_time))
+        doc_ref = db.collection(u'device').document(u'{}'.format(self.uuid)).collection(u'Sensor Data').document(u'{}'.format(self.local_time))
         doc_ref.set({
             u'uuid': self.uuid,
             u'local_time': self.local_time,
@@ -67,11 +67,16 @@ class Data:
             u'ec': float(self.ec),
             u'liquid_temperature': float(self.liquid_temperature) 
         })
+        doc_ref = db.collection(u'device').document(u'{}'.format(self.uuid))
+        doc_ref.update({
+            u'in_use': True,
+        })
         
         pass
     
     def errorPost(self):
-        doc_ref = db.collection(u'users').document(u'user01').collection(u'error').document(u'{}'.format(self.local_time))
+        self.uuid = self.getSerial()
+        doc_ref = db.collection(u'device').document(u'{}'.format(self.uuid)).collection(u'error').document(u'{}'.format(self.local_time))
         doc_ref.set({
             u'uuid': self.uuid,
             u'time': self.local_time,
@@ -82,8 +87,8 @@ class Data:
         pass
     
     def getRecipe(self):
-        doc_ref = db.collection(u'recipe').document(u'r3BaUsbRzZEVYWluEars')
-
+        #doc_ref = db.collection(u'recipe').document(u'r3BaUsbRzZEVYWluEars')
+        doc_ref = db.collection(u'recipe').document(u'test')
         try:
             doc = doc_ref.get()
             data = doc.to_dict()
@@ -94,7 +99,7 @@ class Data:
     
     # --------------- use Sensor data -----------------#
     
-    def checkRecipe(self, ph, ec, rtd):
+    def checkRecipe(self, ph = 0.0, ec = 0.0, rtd = 0.0):
         data = self.getRecipe()
         
         check_ph = True if ph > data['phMin'] and ph < data['phMax'] else False
@@ -103,6 +108,7 @@ class Data:
         
         if check_ph and check_ec and check_rtd:
             self.update(pH=ph, ec=ec, temp=rtd)
+            print(ph, ec, rtd)
             self.post()
         else:
             if ph < data['phMin']: # under_ph
