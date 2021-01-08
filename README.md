@@ -1,19 +1,19 @@
 # SmartFarm-Embedded
 
-## Sensor.py
+* Sensor.py
 ### run code with command
 
-## test.py
+* test.py
 ### run code without command
 
-## Data.py
+* Data.py
 ### upload Sensor Data to Firestore
 
-## AltasI2C.py
+* AltasI2C.py
 ### Get Sensor Data file 
 
-## SetWifi.py
+* SetWifi.py
 ### Auto connect wifi
 
-## SetWifiCommand.py
+* SetWifiCommand.py
 ### input Wifi ID, Password
