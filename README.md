@@ -1,19 +1,24 @@
 # SmartFarm-Embedded
 
+## Instruction
+#### Concat SmartFarm Raspberry Pi Code
+
+
+## Code
 * Sensor.py
-### run code with command
+##### run code with command
 
 * test.py
-### run code without command
+##### run code without command
 
 * Data.py
-### upload Sensor Data to Firestore
+##### upload Sensor Data to Firestore
 
 * AltasI2C.py
-### Get Sensor Data file 
+##### Get Sensor Data file 
 
 * SetWifi.py
-### Auto connect wifi
+##### Auto connect wifi
 
 * SetWifiCommand.py
-### input Wifi ID, Password
+##### input Wifi ID, Password
