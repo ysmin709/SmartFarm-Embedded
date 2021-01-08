@@ -22,7 +22,9 @@ class Data:
     def __init__(self):
         self.uuid = "10000000716d0af6"
         self.local_time = None
-        self.pH = 0.0
+        self.localMin = None
+        self.localHour = None
+        self.ph = 0.0
         self.ec = 0.0
         self.rtd = 0.0
         self.errors = []
@@ -45,35 +47,81 @@ class Data:
         return cpuSerial
         
         
-    def update(self, pH=0.0, ec=0.0, temp=0.0, error_type = 7000, error=False):
+    # Set upload data
+    def update(self, ph=0.0, ec=0.0, temp=0.0, error_type = 7000, error=False):
         if error:
             self.errors.append(error_type)
             self.local_time = datetime.datetime.now(pytz.timezone('Asia/Seoul'))
+            time = str(self.local_time)
+            tmp1 = time.split(" ")
+            tmp2 = tmp1[1].split(":")
+            self.localMin = int(tmp2[1])
+            self.localHour = int (tmp2[0])
         else:
             self.local_time = datetime.datetime.now(pytz.timezone('Asia/Seoul'))
-            self.pH = pH
+            time = str(self.local_time)
+            tmp1 = time.split(" ")
+            tmp2 = tmp1[1].split(":")
+            self.localMin = int(tmp2[1])
+            self.localHour = int(tmp2[0])
+            self.ph = ph
             self.ec = ec
             self.liquid_temperature = temp
             
         pass
     
+    # Sensor Data upload to firestore
     def post(self):
-        self.uuid = self.getSerial()
-        doc_ref = db.collection(u'device').document(u'{}'.format(self.uuid)).collection(u'Sensor Data').document(u'{}'.format(self.local_time))
-        doc_ref.set({
-            u'uuid': self.uuid,
-            u'local_time': self.local_time,
-            u'pH': float(self.pH),
-            u'ec': float(self.ec),
-            u'liquid_temperature': float(self.liquid_temperature) 
-        })
-        doc_ref = db.collection(u'device').document(u'{}'.format(self.uuid))
-        doc_ref.update({
-            u'in_use': True,
-        })
-        
-        pass
+        self.uuid = self.getSerial()  
+        print(self.local_time)
+        if self.localHour >= 0 and self.localHour <= 5:
+            print('a')
+            if self.localMin % 30 == 0:
+                doc_ref = db.collection(u'device').document(u'{}'.format(self.uuid)).collection(u'SensorData').document(u'{}'.format(self.local_time))
+                doc_ref.set({
+                    u'uuid': self.uuid,
+                    u'local_time': self.local_time,
+                    u'pH': float(self.ph),
+                    u'ec': float(self.ec),
+                    u'liquid_temperature': float(self.liquid_temperature) 
+                })
+                
+                # Collection recognize flag
+                doc_ref = db.collection(u'device').document(u'{}'.format(self.uuid))
+                doc_ref.update({
+                    u'in_use': True,
+                })
+                
+                pass
+            
+            else:
+                pass
+        else:
+            print('b')
+            if self.localMin % 5 == 0:
+                print('c')
+                doc_ref = db.collection(u'device').document(u'{}'.format(self.uuid)).collection(u'SensorData').document(u'{}'.format(self.local_time))
+                doc_ref.set({
+                    u'uuid': self.uuid,
+                    u'local_time': self.local_time,
+                    u'pH': float(self.ph),
+                    u'ec': float(self.ec),
+                    u'liquid_temperature': float(self.liquid_temperature) 
+                })
+                
+                # Collection recognize flag
+                doc_ref = db.collection(u'device').document(u'{}'.format(self.uuid))
+                doc_ref.update({
+                    u'in_use': True,
+                })
+                
+                pass
+            
+            else:
+                print('d')
+                pass
     
+    # error upload to firestore
     def errorPost(self):
         self.uuid = self.getSerial()
         doc_ref = db.collection(u'device').document(u'{}'.format(self.uuid)).collection(u'error').document(u'{}'.format(self.local_time))
@@ -82,9 +130,8 @@ class Data:
             u'time': self.local_time,
             u'errors': self.errors
         })
-
-        
         pass
+    
     
     def getRecipe(self):
         #doc_ref = db.collection(u'recipe').document(u'r3BaUsbRzZEVYWluEars')
@@ -107,7 +154,7 @@ class Data:
         check_rtd = True if rtd > data['tempMin'] and rtd < data['tempMax'] else False
         
         if check_ph and check_ec and check_rtd:
-            self.update(pH=ph, ec=ec, temp=rtd)
+            self.update(ph=ph, ec=ec, temp=rtd)
             print(ph, ec, rtd)
             self.post()
         else:
@@ -128,6 +175,15 @@ class Data:
                 self.errorPost()
             elif rtd > data['tempMax']: # over temperature
                 self.update(error_type=5020, error=True)
+                self.errorPost()
+            elif ph == 0: # disconnect ph sensor
+                self.update(error_type=5030, error=True)
+                self.errorPost()
+            elif ec == 0: # disconnect ec sensor
+                self.update(error_type=5031, error=True)
+                self.errorPost()
+            elif rtd == -1023: # disconnect rtd sensor
+                self.update(error_type=5032, error=True)
                 self.errorPost()
         pass
     

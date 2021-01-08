@@ -6,13 +6,23 @@ import fcntl
 import time
 import copy
 import string
+import datetime
+import pytz
 
 class AtlasI2C:
-
+    
+    getTime = datetime.datetime.now(pytz.timezone('Asia/Seoul'))
+    time = str(getTime)
+    temp = time.split(" ")
+    tmp = temp[1].split(":")
+    localHour = int(tmp[0])
+    
     # the timeout needed to query readings and calibrations
-    LONG_TIMEOUT = 180
+    LONG_TIMEOUT = 1
+    #LONG_TIMEOUT = 300
+    
     # timeout for regular commands
-    SHORT_TIMEOUT = 1
+    SHORT_TIMEOUT = 0.1
     # the default bus for I2C on the newer Raspberry Pis, 
     # certain older boards use bus 0
     DEFAULT_BUS = 1

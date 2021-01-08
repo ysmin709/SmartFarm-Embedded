@@ -4,6 +4,8 @@ import io
 import sys
 import fcntl
 import time
+import datetime
+import pytz
 import copy
 import string
 import os
@@ -46,13 +48,19 @@ def main():
             delaytime = float(cmd_list[1])
         else:
             delaytime = device.long_timeout
-
+       
         # check for polling time being too short, change it to the minimum timeout if too short
         if delaytime < device.long_timeout:
             print("Polling time is shorter than timeout, setting polling time to %0.2f" % device.long_timeout)
             delaytime = device.long_timeout
         try:
             while True:
+#                 getTime = datetime.datetime.now(pytz.timezone('Asia/Seoul'))
+#                 timet = str(getTime)
+#                 tmp1 = timet.split(" ")
+#                 tmp2 = tmp1[1].split(":")
+#                 localMin = int(tmp2[1])
+                
                 data_list = []
                 for dev in device_list:
                     dev.write("R")
@@ -74,7 +82,7 @@ def main():
                     data.rtd = round(float(data_list[2]), 1)
                     
                     data.checkRecipe(data.ph, data.ec, data.rtd)
-                    
+                time.sleep(58.75)
             
         except KeyboardInterrupt:       # catches the ctrl-c command, which breaks the loop above
             print("Continuous polling stopped")
