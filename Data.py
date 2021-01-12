@@ -87,10 +87,16 @@ class Data:
                 })
                 
                 # Collection recognize flag
-                doc_ref = db.collection(u'device').document(u'{}'.format(self.uuid))
-                doc_ref.update({
-                    u'in_use': True,
-                })
+                try:
+                    doc_ref = db.collection(u'device').document(u'{}'.format(self.uuid))
+                    doc_ref.update({
+                        u'in_use': True,
+                    })
+                except:
+                    doc_ref = db.collection(u'device').document(u'{}'.format(self.uuid))
+                    doc_ref.set({
+                        u'in_use': True,
+                    })
                 
                 pass
             
