@@ -71,14 +71,13 @@ def main():
                     status = temp[0] # check success or error
                     temp2 = temp1[4].split('\x00')
                     data_list.append(temp2[0])
-                    #print(dev.read())
                 print(data_list)
                 if status is "Error":
                     data.update(error=True)
                     data.error_post()
                 else:
                     data.ph = float(data_list[0])
-                    data.ec = round(float(data_list[1]) / 100, 2)
+                    data.ec = round(float(data_list[1]) / 1000, 2)
                     data.rtd = round(float(data_list[2]), 1)
                     
                     data.checkRecipe(data.ph, data.ec, data.rtd)
