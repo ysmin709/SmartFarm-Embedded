@@ -54,13 +54,7 @@ def main():
             print("Polling time is shorter than timeout, setting polling time to %0.2f" % device.long_timeout)
             delaytime = device.long_timeout
         try:
-            while True:
-#                 getTime = datetime.datetime.now(pytz.timezone('Asia/Seoul'))
-#                 timet = str(getTime)
-#                 tmp1 = timet.split(" ")
-#                 tmp2 = tmp1[1].split(":")
-#                 localMin = int(tmp2[1])
-                
+            while True:    
                 data_list = []
                 for dev in device_list:
                     dev.write("R")
