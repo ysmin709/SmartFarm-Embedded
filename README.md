@@ -1,4 +1,5 @@
 # SmartFarm-Embedded
 
-## Instruction
-#### Concat SmartFarm Raspberry Pi Code
+## Setting
+### I2C
+#### http://blog.naver.com/PostView.nhn?blogId=chgy2131&logNo=221922893758
