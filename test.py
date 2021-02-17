@@ -73,8 +73,11 @@ def main():
                     data.ph = float(data_list[0])
                     data.ec = round(float(data_list[1]) / 1000, 2)
                     data.rtd = round(float(data_list[2]), 1)
+                    #data.pmp = round(float(data_list[3]), 1)
+                    data.co2 = round(float(data_list[3]), 1)
+                    data.hum = round(float(data_list[4]), 1)
                     
-                    data.checkRecipe(data.ph, data.ec, data.rtd)
+                    data.checkRecipe(data.ph, data.ec, data.rtd, data.co2, data.hum)
                 time.sleep(58.75)
             
         except KeyboardInterrupt:       # catches the ctrl-c command, which breaks the loop above

@@ -27,6 +27,8 @@ class Data:
         self.ph = 0.0
         self.ec = 0.0
         self.rtd = 0.0
+        self.co2 = 0.0
+        self.hum = 0.0
         self.errors = []
         self.uuid = os.system(EXPORT204)
         
@@ -48,7 +50,7 @@ class Data:
         
         
     # Set upload data
-    def update(self, ph=0.0, ec=0.0, temp=0.0, error_type = 7000, error=False):
+    def update(self, ph=0.0, ec=0.0, temp=0.0, co2=0.0, hum=0.0, error_type = 7000, error=False):
         if error:
             self.errors.append(error_type)
             self.local_time = datetime.datetime.now(pytz.timezone('Asia/Seoul'))
@@ -67,15 +69,14 @@ class Data:
             self.ph = ph
             self.ec = ec
             self.liquid_temperature = temp
-            
+            self.co2 = co2
+            self.hum = hum
         pass
     
     # Sensor Data upload to firestore
     def post(self):
         self.uuid = self.getSerial()  
-        print(self.local_time)
         if self.localHour >= 0 and self.localHour <= 5:
-            print('a')
             if self.localMin % 30 == 0:
                 doc_ref = db.collection(u'device').document(u'{}'.format(self.uuid)).collection(u'SensorData').document(u'{}'.format(self.local_time))
                 doc_ref.set({
@@ -83,7 +84,9 @@ class Data:
                     u'local_time': self.local_time,
                     u'pH': float(self.ph),
                     u'ec': float(self.ec),
-                    u'liquid_temperature': float(self.liquid_temperature) 
+                    u'liquid_temperature': float(self.liquid_temperature),
+                    u'co2': float(self.co2),
+                    u'humidity': float(self.hum)
                 })
                 
                 # Collection recognize flag
@@ -103,16 +106,16 @@ class Data:
             else:
                 pass
         else:
-            print('b')
             if self.localMin % 5 == 0:
-                print('c')
                 doc_ref = db.collection(u'device').document(u'{}'.format(self.uuid)).collection(u'SensorData').document(u'{}'.format(self.local_time))
                 doc_ref.set({
                     u'uuid': self.uuid,
                     u'local_time': self.local_time,
                     u'pH': float(self.ph),
                     u'ec': float(self.ec),
-                    u'liquid_temperature': float(self.liquid_temperature) 
+                    u'liquid_temperature': float(self.liquid_temperature),
+                    u'co2': float(self.co2),
+                    u'humidity': float(self.hum)
                 })
                 
                 # Collection recognize flag
@@ -130,7 +133,6 @@ class Data:
                 pass
             
             else:
-                print('d')
                 pass
     
     # error upload to firestore
@@ -157,46 +159,20 @@ class Data:
         return data
     
     # --------------- use Sensor data -----------------#
-    
-    def checkRecipe(self, ph = 0.0, ec = 0.0, rtd = 0.0):
+    # Not use this code Error handling at Front
+    def checkRecipe(self, ph = 0.0, ec = 0.0, rtd = 0.0, co2 = 0.0, hum = 0.0):
         data = self.getRecipe()
         
         check_ph = True if ph > data['phMin'] and ph < data['phMax'] else False
         check_ec = True if ec > data['ecMin'] and ec < data['ecMax'] else False
         check_rtd = True if rtd > data['tempMin'] and rtd < data['tempMax'] else False
+        check_co2 = True if co2 > data['co2Min'] and co2 < data['co2Max'] else False
+        check_hum = True if hum > data['humMin'] and hum < data['humMax'] else False
         
-        if check_ph and check_ec and check_rtd:
-            self.update(ph=ph, ec=ec, temp=rtd)
-            print(ph, ec, rtd)
+        if check_ph and check_ec and check_rtd and check_co2 and check_hum:
+            self.update(ph=ph, ec=ec, temp=rtd, co2=co2, hum=hum)
             self.post()
-        else:
-            if ph < data['phMin']: # under_ph
-                self.update(error_type=5001, error=True)
-                self.errorPost()
-            elif ph > data['phMax']: # over ph
-                self.update(error_type=5000, error=True)
-                self.errorPost()
-            elif ec < data['ecMin']: # under ec
-                self.update(error_type=5011, error=True)
-                self.errorPost()
-            elif ec > data['ecMax']: # over ec
-                self.update(error_type=5010, error=True)
-                self.errorPost()
-            elif rtd < data['tempMin']: # under temperature
-                self.update(error_type=5021, error=True)
-                self.errorPost()
-            elif rtd > data['tempMax']: # over temperature
-                self.update(error_type=5020, error=True)
-                self.errorPost()
-            elif ph == 0: # disconnect ph sensor
-                self.update(error_type=5030, error=True)
-                self.errorPost()
-            elif ec == 0: # disconnect ec sensor
-                self.update(error_type=5031, error=True)
-                self.errorPost()
-            elif rtd == -1023: # disconnect rtd sensor
-                self.update(error_type=5032, error=True)
-                self.errorPost()
+
         pass
     
     
