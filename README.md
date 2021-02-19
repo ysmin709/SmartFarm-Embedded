@@ -1,7 +1,8 @@
 # SmartFarm-Embedded
 
 ## Setting
-#### PH, EC, RTD Sensor Module UART to I2C : https://www.instructables.com/UART-AND-I2C-MODE-SWITCHING-FOR-ATLAS-SCIENTIFIC-E/
+#### PH, EC, RTD, CO2, HUM, PMP Sensor Module UART to I2C : https://www.instructables.com/UART-AND-I2C-MODE-SWITCHING-FOR-ATLAS-SCIENTIFIC-E/
+* pH, EC, RTD Sensor들의 통신 변경 방법과 CO2, HUM, PMP Sensor의 통신 변경 방법이 다르므로, 위의 링크에서 "Step 2: MANUAL SWITCHING" 그림을 주의하여 참고한다. 
 #### Raspberry Pi I2C Setting : https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c
 #### Autostart
   - Sensor 폴더 안에 autostartWifi.sh Shellscript 파일 생성
