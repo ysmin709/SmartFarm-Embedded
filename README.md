@@ -3,7 +3,16 @@
 ## Setting
 #### Sensor Module UART to I2C : https://www.instructables.com/UART-AND-I2C-MODE-SWITCHING-FOR-ATLAS-SCIENTIFIC-E/
 #### Raspberry Pi I2C Setting : https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c
-#### Autostart : 
+#### Autostart
+  - Sensor 폴더 안에 autostartWifi.sh Shellscript 파일 생성
+    #!/bin/sh
+    cd Desktop/Sensor
+    python3 SetWifi.py
+    python3 test.py
+  - 터미널을 열고 sudo nano /etc/xdg/lxsession/LXDE-pi/autostart 입력
+  - @pcmanfm와 @xscreensaver 사이에 lxterminal -e /home/pi/Desktop/Sensor/autostartWifi.sh 입력 후 저장
+  - Reboot를 진행하여 잘 작동하는지 확인
+
 #### Wifi
   - Raspberry Pi에서 Wifi에 관한 정보는 "wpa_supplicant.conf"파일에 있다.
   - 현재 Raspberry Pi 실행시 id와 pw를 입력하면 "wpa_supplicant.conf"파일에 입력 정보가 저장된다.
